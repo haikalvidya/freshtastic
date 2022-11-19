@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+  # fe-prod:
+  #   build:
+  #     context: ./frontend/
+  #     args:
+  #       - NODE_ENV=production
+  #   container_name: fe-prod
+  #   restart: always
+  #   ports:
+  #     - '3000:3000'
+
+  fe-dev:
+    build:
+      context: ./frontend/
+      target: deps
+    command: npm run dev
+    container_name: fe-dev
+    restart: always
+    ports:
+      - '3001:3000'
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+
+  be-go:
+    build: 
+      context: ./backend/
+      dockerfile: Dockerfile
+    expose: 
+      - "8080"
+    # restart: unless-stopped
+    environment: 
+      DB_HOST: db
+    depends_on: 
+      - db
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment: 
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: freshtastic
+
+
+    
